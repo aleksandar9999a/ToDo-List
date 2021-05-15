@@ -1,11 +1,16 @@
+// Entities
 import { USERS_ENTITY } from 'src/config/entities';
-import { INewUser, IUser } from 'src/intefaces';
+
+// Services
 import { auth, firestore } from './firebase.service';
 import loadingService, { LoadingService } from './loading.service';
 import notificationsService, { NotificationsService } from './notifications.service';
 
+// Interfaces
+import { INewUser, IUser } from 'src/intefaces';
+
 export class UserService {
-  user: null | IUser = null;
+  user: null | IUser;
 
   private loadingService: LoadingService;
   private notificationsService: NotificationsService;
@@ -13,6 +18,7 @@ export class UserService {
   constructor (loadingService: LoadingService, notificationsService: NotificationsService) {
     this.loadingService = loadingService;
     this.notificationsService = notificationsService;
+    this.user = null;
   }
 
   getCurrentUser (fn: (user: IUser | null) => void) {
@@ -32,6 +38,8 @@ export class UserService {
   }
 
   get (id: string) {
+    this.loadingService.startLoading();
+
     return firestore
       .collection(USERS_ENTITY)
       .doc(id)
@@ -41,6 +49,9 @@ export class UserService {
       })
       .catch((error: Error) => {
         this.notificationsService.addErrorNotification(error.message);
+      })
+      .finally(() => {
+        this.loadingService.stopLoading();
       })
   }
 
@@ -72,12 +83,17 @@ export class UserService {
   }
 
   update (id: string, update: { [key: string]: string }) {
+    this.loadingService.startLoading();
+
     return firestore
       .collection(USERS_ENTITY)
       .doc(id)
       .update(update)
       .catch((error: Error) => {
         this.notificationsService.addErrorNotification(error.message);
+      })
+      .finally(() => {
+        this.loadingService.stopLoading();
       })
   }
 
