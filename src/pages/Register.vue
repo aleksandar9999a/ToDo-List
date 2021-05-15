@@ -29,20 +29,29 @@
 </template>
 
 <script lang="ts">
+// Vue
 import { defineComponent, ref } from 'vue';
 
+// Router
+import { useRouter } from 'vue-router'
+
+// Services
 import userService from './../services/user.service'
 
 export default defineComponent({
   name: 'Register',
   setup() {
-    const email = ref('')
-    const password = ref('')
+    const email = ref('');
+    const password = ref('');
+    const router = useRouter();
 
     function onSubmit (e: any) {
       e.preventDefault();
 
-      userService.create({ email: email.value, password: password.value })
+      return userService.create({ email: email.value, password: password.value })
+        .then(() => {
+          router.push('/')
+        })
     }
 
     return {
