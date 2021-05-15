@@ -21,11 +21,11 @@
 
           <q-card-actions class="absolute-bottom row items-center q-pa-none justify-center bg-indigo">
             <q-tabs v-model="tab" class="text-white" no-caps inline-label>
-              <q-tab name="user" icon="person" label="Profile" />
+              <q-route-tab name="profile" icon="person" label="Profile" to="/" />
 
-              <q-tab name="todos" icon="check" label="Todos" />
+              <q-route-tab name="todos" icon="check" label="Todos" to="/list" />
 
-              <q-tab name="lists" icon="movie" label="Lists" />
+              <q-route-tab name="lists" icon="movie" label="Lists" to="/lists" />
             </q-tabs>
           </q-card-actions>
         </q-card>
@@ -41,8 +41,7 @@ export default defineComponent({
   name: 'MainLayout',
   components: {},
   setup () {
-    const tab = ref('user')
-
+    const tab = ref('profile')
     return { tab }
   }
 })
