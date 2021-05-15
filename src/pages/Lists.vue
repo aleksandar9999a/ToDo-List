@@ -9,15 +9,34 @@
         <q-item
           v-for="item in lists"
           :key="item.id"
-          @click="handleClick(item)"
           clickable
           v-ripple
         >
-          <q-item-section>
+          <div class="row items-center" @click="handleClick(item)">
             {{ item.name }}
-          </q-item-section>
+          </div>
 
-          <q-badge rounded color="primary" :label="item.items.length" />
+          <div class="q-ml-md row items-center">
+            <q-badge color="negative" @click="handleClick(item, 'notDone')">
+              {{ item.items.filter(x => x.state !== 'done').length }} <q-icon name="close" color="white" class="q-ml-xs" />
+            </q-badge>
+          </div>
+
+          <div class="q-mx-md row items-center">
+            <q-badge color="positive" @click="handleClick(item, 'done')">
+              {{ item.items.filter(x => x.state === 'done').length }} <q-icon name="check" color="white" class="q-ml-xs" />
+            </q-badge>
+          </div>
+
+          <q-space @click="handleClick(item)" />
+
+          <q-btn
+            round
+            color="negative"
+            class="q-ml-md"
+            icon="delete"
+            @click="handleDelete(item)"
+          />
         </q-item>
       </q-list>
     </div>
@@ -87,8 +106,16 @@ export default defineComponent({
         })
     }
 
-    function handleClick (item: IList) {
+    function handleClick (item: IList, filter: 'all' | 'done' | 'notDone' = 'all') {
       console.debug(item);
+      console.debug(filter);
+    }
+
+    function handleDelete (item: IList) {
+      return listService.delete(item.id)
+        .then(() => {
+          lists.value = lists.value.filter(({ id }) => id !== item.id);
+        })
     }
 
     function handleAddList () {
@@ -113,7 +140,7 @@ export default defineComponent({
       loadItems();
     })
 
-    return { name, lists, isOpen, loadItems, handleClick, handleAddList, handleSave };
+    return { name, lists, isOpen, loadItems, handleClick, handleAddList, handleSave, handleDelete };
   }
 });
 </script>

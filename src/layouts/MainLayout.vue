@@ -23,9 +23,7 @@
             <q-tabs v-model="tab" class="text-white" no-caps inline-label>
               <q-route-tab name="profile" icon="person" label="Profile" to="/profile" />
 
-              <q-route-tab name="todos" icon="check" label="Todos" to="/list" />
-
-              <q-route-tab name="lists" icon="movie" label="Lists" to="/" />
+              <q-route-tab name="lists" icon="check" label="Lists" to="/" />
             </q-tabs>
           </q-card-actions>
         </q-card>

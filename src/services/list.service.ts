@@ -47,6 +47,7 @@ export class ListService {
     return firestore
       .collection(LISTS_ENTITY)
       .where('creator', '==', this.userService.user.id)
+      .where('state', '==', 'active')
       .get()
       .then(shot => {
         return shot.docs.map(doc => doc.data()) as IList[];
