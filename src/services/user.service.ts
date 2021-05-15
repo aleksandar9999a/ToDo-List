@@ -55,6 +55,46 @@ export class UserService {
       })
   }
 
+  logout () {
+    this.loadingService.startLoading();
+
+    return auth.signOut()
+      .then(() => {
+        this.user = null;
+        return null;
+      })
+      .catch((error: Error) => {
+        this.notificationsService.addErrorNotification(error.message);
+      })
+      .finally(() => {
+        this.loadingService.stopLoading();
+      })
+  }
+
+  login (email: string, password: string) {
+    this.loadingService.startLoading();
+
+    return auth.signInWithEmailAndPassword(email, password)
+      .then(data => {
+        if (!data.user) {
+          this.user = null;
+          return Promise.resolve(null);
+        }
+
+        return this.get(data.user.uid)
+          .then(user => {
+            this.user = user as IUser;
+            return user;
+          })
+      })
+      .catch((error: Error) => {
+        this.notificationsService.addErrorNotification(error.message);
+      })
+      .finally(() => {
+        this.loadingService.stopLoading();
+      })
+  }
+
   create ({ email, password }: INewUser) {
     this.loadingService.startLoading();
 
