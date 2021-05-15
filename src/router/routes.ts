@@ -8,9 +8,9 @@ const routes: RouteRecordRaw[] = [
       { path: '', component: () => import('pages/Lists.vue') },
       { path: '/list/:id', component: () => import('src/pages/List.vue') },
       { path: '/list', component: () => import('src/pages/List.vue') },
-      { path: '/profile', component: () => import('pages/Profile.vue'), meta: { hideFab: true } },
-      { path: '/login', component: () => import('pages/Login.vue'), meta: { hideToolbar: true, hideFab: true } },
-      { path: '/register', component: () => import('pages/Register.vue'), meta: { hideToolbar: true, hideFab: true } },
+      { path: '/profile', component: () => import('pages/Profile.vue') },
+      { path: '/login', component: () => import('pages/Login.vue'), meta: { hideToolbar: true, noAuth: true } },
+      { path: '/register', component: () => import('pages/Register.vue'), meta: { hideToolbar: true, noAuth: true } },
     ],
   },
 

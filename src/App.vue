@@ -2,9 +2,27 @@
   <router-view />
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue';
+// Vue
+import { defineComponent, onMounted, ref } from 'vue';
+
+// Services
+import userService from './services/user.service';
+
+// Interfaces
+import { IUser } from './intefaces';
 
 export default defineComponent({
-  name: 'App'
+  name: 'App',
+  setup () {
+    onMounted(() => {
+      const user = ref<null | IUser>(null);
+
+      userService.getCurrentUser(u => {
+        user.value = u;
+      })
+
+      return { user }
+    })
+  }
 })
 </script>

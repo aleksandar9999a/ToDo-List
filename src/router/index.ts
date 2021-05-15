@@ -1,9 +1,12 @@
 import { route } from 'quasar/wrappers';
+import userService from 'src/services/user.service';
 import {
   createMemoryHistory,
   createRouter,
   createWebHashHistory,
   createWebHistory,
+  RouteLocationNormalized,
+  NavigationGuardNext
 } from 'vue-router';
 import { StateInterface } from '../store';
 import routes from './routes';
@@ -36,6 +39,38 @@ export default route<StateInterface>(function (/* { store, ssrContext } */) {
       process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE
     ),
   });
+
+  function authCheck (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) {
+    if (to.meta.noAuth && !userService.user && !userService.loading.value) {
+      next();
+      return;
+    }
+
+    if (to.meta.noAuth && !userService.user && userService.loading.value) {
+      setTimeout(() => {
+        authCheck(to, from, next);
+      }, 1000)
+
+      return;
+    }
+
+    if (!to.meta.noAuth && !userService.user && !userService.loading.value) {
+      next('/login');
+      return;
+    }
+
+    if (!to.meta.noAuth && !userService.user && userService.loading.value) {
+      setTimeout(() => {
+        authCheck(to, from, next);
+      }, 1000)
+
+      return;
+    }
+
+    next();
+  }
+
+  Router.beforeEach(authCheck);
 
   return Router;
 });

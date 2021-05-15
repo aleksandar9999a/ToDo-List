@@ -8,9 +8,12 @@ import notificationsService, { NotificationsService } from './notifications.serv
 
 // Interfaces
 import { INewUser, IUser } from 'src/intefaces';
+import { BehaviorSubject } from 'rxjs';
 
 export class UserService {
   user: null | IUser;
+
+  loading: BehaviorSubject<boolean>;
 
   private loadingService: LoadingService;
   private notificationsService: NotificationsService;
@@ -19,14 +22,18 @@ export class UserService {
     this.loadingService = loadingService;
     this.notificationsService = notificationsService;
     this.user = null;
+    this.loading = new BehaviorSubject<boolean>(false);
   }
 
   getCurrentUser (fn: (user: IUser | null) => void) {
+    this.loading.next(true);
     return auth.onAuthStateChanged(user => {
+      this.loading.next(false);
+
       if (!user) {
         fn(null);
         this.user = null;
-        return Promise.resolve(null)
+        return Promise.resolve(null);
       }
 
       return this.get(user.uid)
