@@ -1,1 +1,25 @@
 // app global css in SCSS form
+
+.app-card {
+  background: #fff;
+
+  .app-card__content {
+    min-height: 70vh;
+    max-height: 80vh;
+  }
+}
+
+
+@media screen and (max-width: 1023px) {
+  .no-padding-sm {
+    padding: 0;
+  }
+
+  .app-card {
+    height: 100vh;
+
+    .app-card__content {
+      min-height: calc(100vh - 100px);
+    }
+  }
+}
