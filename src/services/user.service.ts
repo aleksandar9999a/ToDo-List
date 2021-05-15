@@ -111,6 +111,7 @@ export class UserService {
           .doc(userdata.id)
           .set(userdata)
           .then(() => {
+            this.notificationsService.addSuccessNotification('You are successful registered!');
             return userdata as IUser;
           })
       })
