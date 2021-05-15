@@ -1,16 +1,55 @@
 <template>
-  <div class="row items-center justify-evenly">
-    Register
+  <div class="">
+    <q-form
+      @submit="onSubmit"
+      class="q-gutter-md"
+    >
+      <q-input
+        filled
+        v-model="email"
+        label="Your email *"
+        type="email"
+        autocomplete="email"
+        required
+      />
+
+      <q-input
+        filled
+        type="password"
+        v-model="password"
+        autocomplete="current-password"
+        required
+      />
+
+      <div class="text-center">
+        <q-btn label="Register" type="submit" color="primary"/>
+      </div>
+    </q-form>
   </div>
 </template>
 
-<script>
-import { defineComponent } from 'vue';
+<script lang="ts">
+import { defineComponent, ref } from 'vue';
+
+import userService from './../services/user.service'
 
 export default defineComponent({
   name: 'Register',
   setup() {
-    return {};
+    const email = ref('')
+    const password = ref('')
+
+    function onSubmit (e: any) {
+      e.preventDefault();
+
+      userService.create({ email: email.value, password: password.value })
+    }
+
+    return {
+      email,
+      password,
+      onSubmit
+    };
   }
 });
 </script>
