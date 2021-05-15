@@ -119,7 +119,7 @@ export class ListService {
       })
   }
 
-  update (id: string, update: { [key: string]: string }) {
+  update (id: string, update: { [key: string]: any }) {
     this.loadingService.startLoading();
 
     return firestore

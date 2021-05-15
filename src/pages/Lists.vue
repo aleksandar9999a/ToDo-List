@@ -1,6 +1,6 @@
 <template>
   <div class="row items-center justify-evenly">
-    <div class="col-10">
+    <div class="col-11">
       <div v-if="lists.length <= 0" class="text-center">
         <h6>No Lists</h6>
       </div>
@@ -13,19 +13,21 @@
           v-ripple
         >
           <div class="row items-center" @click="handleClick(item)">
-            {{ item.name }}
-          </div>
+            <div class="row items-center">
+              {{ item.name }}
+            </div>
 
-          <div class="q-ml-md row items-center">
-            <q-badge color="negative" @click="handleClick(item, 'notDone')">
-              {{ item.items.filter(x => x.state !== 'done').length }} <q-icon name="close" color="white" class="q-ml-xs" />
-            </q-badge>
-          </div>
+            <div class="q-ml-md row items-center">
+              <q-badge color="negative">
+                {{ item.items.filter(x => x.state !== 'done').length }} <q-icon name="close" color="white" class="q-ml-xs" />
+              </q-badge>
+            </div>
 
-          <div class="q-mx-md row items-center">
-            <q-badge color="positive" @click="handleClick(item, 'done')">
-              {{ item.items.filter(x => x.state === 'done').length }} <q-icon name="check" color="white" class="q-ml-xs" />
-            </q-badge>
+            <div class="q-mx-md row items-center">
+              <q-badge color="positive">
+                {{ item.items.filter(x => x.state === 'done').length }} <q-icon name="check" color="white" class="q-ml-xs" />
+              </q-badge>
+            </div>
           </div>
 
           <q-space @click="handleClick(item)" />
@@ -50,10 +52,10 @@
     </div>
 
     <q-dialog v-model="isOpen">
-      <q-card style="min-width: 400px;">
+      <q-card class="app-item-card">
         <q-card-section class="row items-center q-pb-none">
           <div class="text-h6">
-            New List
+            {{ item.id ? 'Edit List' : 'New List' }}
           </div>
 
           <q-space />
@@ -64,11 +66,64 @@
         <q-card-section>
           <q-input
             filled
-            v-model="name"
+            v-model="item.name"
             label="List name *"
             type="text"
             required
           />
+        </q-card-section>
+
+        <q-card-section style="max-height: 280px; overflow: auto;">
+          <q-list bordered separator>
+            <q-item
+              v-for="item in item.items"
+              :key="item.id"
+              clickable
+              v-ripple
+            >
+              <div class="q-py-xs">
+                <q-item-label>{{ item.text }}</q-item-label>
+
+                <q-item-label caption>{{ item.state === 'done' ? 'Done' : 'Not Done' }}</q-item-label>
+              </div>
+
+              <q-space />
+
+              <q-btn
+                v-if="item.state === 'done'"
+                round
+                color="negative"
+                class="q-ml-md"
+                icon="close"
+                @click="setTodoState(item, 'notDone')"
+              />
+
+              <q-btn
+                v-else
+                round
+                color="positive"
+                class="q-ml-md"
+                icon="check"
+                @click="setTodoState(item, 'done')"
+              />
+
+              <q-btn
+                round
+                color="negative"
+                class="q-ml-md"
+                icon="delete"
+                @click="handleDeleteTodo(item)"
+              />
+            </q-item>
+          </q-list>
+        </q-card-section>
+
+        <q-card-section>
+          <q-input filled bottom-slots v-model="text" label="New Todo" class="q-mt-sm">
+            <template v-slot:after>
+              <q-btn round dense flat icon="send" @click="handleAddTodo" />
+            </template>
+          </q-input>
         </q-card-section>
 
         <q-card-actions class="row item-center justify-center">
@@ -89,14 +144,19 @@ import { defineComponent, ref, onMounted } from 'vue';
 import listService from 'src/services/list.service';
 
 // Interfaces
-import { IList } from 'src/intefaces';
+import { IList, INewList, ITodoItem } from 'src/intefaces';
+
+// Plugins
+import { v4 as uuidv4 } from 'uuid';
 
 export default defineComponent({
   name: 'Lists',
   setup() {
     const lists = ref<IList[]>([]);
-    const name = ref<string>('');
     const isOpen = ref<boolean>(false);
+    const text = ref<string>('');
+
+    const item = ref<IList | INewList>({ name: '', items: [] });
 
     function loadItems () {
       listService
@@ -106,9 +166,9 @@ export default defineComponent({
         })
     }
 
-    function handleClick (item: IList, filter: 'all' | 'done' | 'notDone' = 'all') {
-      console.debug(item);
-      console.debug(filter);
+    function handleClick (list: IList) {
+      item.value = list;
+      isOpen.value = true
     }
 
     function handleDelete (item: IList) {
@@ -119,28 +179,80 @@ export default defineComponent({
     }
 
     function handleAddList () {
+      item.value = { name: '', items: [] };
       isOpen.value = true;
     }
 
     function handleSave () {
-      return listService.create({ name: name.value, items: [] })
-        .then(item => {
-          if (!item) {
+      if (item.value.id) {
+        return update(item.value as IList);
+      }
+
+      return create(item.value as INewList);
+    }
+
+    function update (list: IList) {
+      return listService.update(list.id, { name: list.name, items: list.items })
+        .then(() => {
+          lists.value = lists.value.map(x => {
+            return list.id === x.id
+              ? list
+              : x
+          });
+
+          item.value = { name: '', items: [] };
+          isOpen.value = false;
+        })
+    }
+
+    function create (list: INewList) {
+      return listService.create(list)
+        .then(list => {
+          if (!list) {
             return;
           }
 
-          name.value = '';
-          lists.value = [(item as IList), ...lists.value];
-          handleClick(item as IList);
+          lists.value = [(list as IList), ...lists.value];
           isOpen.value = false;
+          item.value = { name: '', items: [] }
         })
+    }
+
+    function handleAddTodo () {
+      if (text.value.length <= 0) {
+        return;
+      }
+
+      item.value = {
+        ...item.value,
+        items: [
+          { id: uuidv4(), text: text.value, state: 'notDone' },
+          ...item.value.items
+        ]
+      }
+
+      text.value = ''
+    }
+
+    function setTodoState (todo: ITodoItem, state: 'done' | 'notDone') {
+      item.value.items = item.value.items.map(x => {
+        if (x.id === todo.id) {
+          x.state = state;
+        }
+
+        return x;
+      })
+    }
+
+    function handleDeleteTodo (todo: ITodoItem) {
+      item.value.items = item.value.items.filter(val => val.id !== todo.id);
     }
 
     onMounted(() => {
       loadItems();
     })
 
-    return { name, lists, isOpen, loadItems, handleClick, handleAddList, handleSave, handleDelete };
+    return { item, text, lists, isOpen, loadItems, handleClick, handleAddList, handleSave, handleDelete, handleDeleteTodo, handleAddTodo, setTodoState };
   }
 });
 </script>

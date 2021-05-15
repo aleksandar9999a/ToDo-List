@@ -1,4 +1,5 @@
 export interface INewList {
+  id?: string,
   name: string,
   items: ITodoItem[]
 }
@@ -10,7 +11,8 @@ export interface IList extends INewList {
 
 export interface ITodoItem {
   id: string,
-  text: string
+  text: string,
+  state: 'done' | 'notDone'
 }
 
 export interface IUser {

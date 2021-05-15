@@ -9,10 +9,19 @@
   }
 }
 
+.app-item-card {
+  min-width: 500px;
+}
+
 
 @media screen and (max-width: 1023px) {
   .no-padding-sm {
     padding: 0;
+  }
+
+  .app-item-card {
+    min-width: 98vw;
+    max-width: 98vw;
   }
 
   .app-card {
