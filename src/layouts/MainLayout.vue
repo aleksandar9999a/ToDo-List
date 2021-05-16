@@ -9,11 +9,11 @@
 
       <div v-else class="col-12 col-md-5 q-py-lg no-padding-sm">
         <q-card class="app-card">
-          <q-card-section class="text-center q-pt-xs q-pb-none">
+          <q-card-section v-if="!meta.hideHeader" class="text-center q-pt-xs q-pb-none">
             <h1 class="text-h4">Todo App</h1>
           </q-card-section>
 
-          <q-separator inset />
+          <q-separator v-if="!meta.hideHeader" inset />
 
           <q-card-section class="app-card__content">
             <router-view />
@@ -61,6 +61,7 @@ export default defineComponent({
     })
 
     return {
+      isLoading,
       meta,
       tab,
     }

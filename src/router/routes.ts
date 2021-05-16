@@ -7,8 +7,8 @@ const routes: RouteRecordRaw[] = [
     children: [
       { path: '', component: () => import('pages/Lists.vue') },
       { path: '/profile', component: () => import('pages/Profile.vue') },
-      { path: '/login', component: () => import('pages/Login.vue'), meta: { hideToolbar: true, noAuth: true } },
-      { path: '/register', component: () => import('pages/Register.vue'), meta: { hideToolbar: true, noAuth: true } },
+      { path: '/login', component: () => import('pages/Login.vue'), meta: { hideToolbar: true, hideHeader: true, noAuth: true } },
+      { path: '/register', component: () => import('pages/Register.vue'), meta: { hideToolbar: true, hideHeader: true, noAuth: true } },
     ],
   },
 

@@ -1,8 +1,10 @@
 <template>
-  <div>
+  <div class="text-center">
+    <logo />
+
     <q-form
       @submit="onSubmit"
-      class="q-gutter-md"
+      class="q-gutter-md q-mt-md"
     >
       <q-input
         filled
@@ -21,9 +23,11 @@
         required
       />
 
-      <div class="text-center">
-        <q-btn label="Login" type="submit" color="primary"/>
-      </div>
+      <q-btn label="Login" type="submit" color="primary" class="q-mr-sm"/>
+
+      <p>
+        Not a member yet? Click <router-link class="text-positive" to="/register">here</router-link> to register!
+      </p>
     </q-form>
   </div>
 </template>
@@ -31,6 +35,9 @@
 <script lang="ts">
 // Vue
 import { defineComponent, ref } from 'vue';
+
+// Components
+import Logo from 'src/components/Logo.vue';
 
 // Router
 import { useRouter } from 'vue-router'
@@ -40,12 +47,15 @@ import userService from './../services/user.service'
 
 export default defineComponent({
   name: 'Login',
+  components: {
+    Logo
+  },
   setup() {
     const email = ref('');
     const password = ref('');
     const router = useRouter();
 
-    function onSubmit (e: any) {
+    function onSubmit (e: Event) {
       e.preventDefault();
 
       return userService.login(email.value, password.value)

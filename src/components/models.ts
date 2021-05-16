@@ -1,4 +1,5 @@
 export interface IMeta {
   hideToolbar?: boolean,
-  hideFab?: boolean
+  hideFab?: boolean,
+  hideHeader?: boolean
 }

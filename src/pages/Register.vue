@@ -1,8 +1,10 @@
 <template>
-  <div class="">
+  <div class="text-center">
+    <logo />
+
     <q-form
       @submit="onSubmit"
-      class="q-gutter-md"
+      class="q-gutter-md q-mt-md"
     >
       <q-input
         filled
@@ -21,9 +23,11 @@
         required
       />
 
-      <div class="text-center">
-        <q-btn label="Register" type="submit" color="primary"/>
-      </div>
+      <q-btn label="Register" type="submit" color="primary" class="q-mr-sm"/>
+
+      <p>
+        Are you a member? Click <router-link class="text-positive" to="/login">here</router-link> to login!
+      </p>
     </q-form>
   </div>
 </template>
@@ -32,14 +36,20 @@
 // Vue
 import { defineComponent, ref } from 'vue';
 
+// Components
+import Logo from 'src/components/Logo.vue';
+
 // Router
-import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router';
 
 // Services
-import userService from './../services/user.service'
+import userService from './../services/user.service';
 
 export default defineComponent({
   name: 'Register',
+  components: {
+    Logo
+  },
   setup() {
     const email = ref('');
     const password = ref('');

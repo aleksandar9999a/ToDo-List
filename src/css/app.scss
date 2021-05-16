@@ -5,7 +5,8 @@
 
   .app-card__content {
     min-height: 70vh;
-    max-height: 80vh;
+    max-height: 90vh;
+    overflow: auto;
   }
 }
 
